@@ -1,0 +1,14 @@
+{
+  "label": "DEV",
+  "endpoint": [
+    {
+      "endpoint": "pokemonService",
+      "urls": [
+        "https://dev.pokeapi.co"
+      ]
+    }
+  ],
+  "ssl": {
+    "enabled": false
+  }
+}

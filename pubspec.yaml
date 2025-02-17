@@ -25,3 +25,11 @@ flutter_launcher_icons:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/icon/
+    - path: assets/dev/
+      flavors:
+        - dev
+    - path: assets/prod/
+      flavors:
+        - prod
