@@ -1,4 +1,4 @@
-package com.example.challenge_banpay
+package com.banpay.challenge.brandon
 
 import io.flutter.embedding.android.FlutterActivity
 
