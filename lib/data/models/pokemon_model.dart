@@ -68,6 +68,7 @@ class PokemonModel extends PokemonEntity {
         imageSrc: json["imageSrc"],
         height: json["height"],
         weight: json["weight"],
+        nickname: json["nickname"],
         abilities: List<AbilityElementModel>.from(
             json["abilities"].map((x) => AbilityElementModel.fromJson(x))),
         types: List<TypeModel>.from(
@@ -81,6 +82,7 @@ class PokemonModel extends PokemonEntity {
         "imageSrc": imageSrc,
         "height": height,
         "weight": weight,
+        "nickname": nickname,
         "abilities": List<dynamic>.from(abilities.map((x) => x.toJson())),
         "types": List<dynamic>.from(types.map((x) => x.toJson())),
       };
