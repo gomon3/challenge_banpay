@@ -7,8 +7,11 @@ environment:
   sdk: ^3.5.4
 
 dependencies:
+  cached_network_image: ^3.4.1
   flutter:
     sdk: flutter
+  http:
+  shared_preferences: ^2.5.2
 
 dev_dependencies:
   flutter_test:

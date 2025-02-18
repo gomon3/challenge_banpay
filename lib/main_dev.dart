@@ -6,6 +6,9 @@ void main() {
   Global.env = Env.dev;
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
-    home: TwoButtonsView(),
+    debugShowCheckedModeBanner: false,
+      title: 'Pokémon App',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: PokemonListPage(),
   ));
 }
