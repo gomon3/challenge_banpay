@@ -26,9 +26,12 @@ class PokemonModel extends PokemonEntity {
   final int weight;
 
   @HiveField(6)
-  final List<AbilityElementModel> abilities;
+  final String? nickname;
 
   @HiveField(7)
+  final List<AbilityElementModel> abilities;
+
+  @HiveField(8)
   final List<TypeModel> types;
 
   PokemonModel({
@@ -38,6 +41,7 @@ class PokemonModel extends PokemonEntity {
     required this.imageSrc,
     required this.height,
     required this.weight,
+    this.nickname,
     required this.abilities,
     required this.types,
   }) : super(
@@ -47,6 +51,7 @@ class PokemonModel extends PokemonEntity {
           imageSrc: imageSrc,
           height: height,
           weight: weight,
+          nickname: nickname,
           abilities: abilities,
           types: types,
         );
