@@ -1,46 +1,54 @@
+import 'package:challenge_banpay/data/datasources/local/pokemon_source.dart';
 import 'package:challenge_banpay/data/datasources/remote/pokemon_source.dart';
 import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
 import 'package:challenge_banpay/domain/repositories/pokemon_repository.dart';
-import 'package:challenge_banpay/data/models/pokemon_model.dart';
-import 'package:hive/hive.dart';
 
 class PokemonRepositoryImpl implements PokemonRepository {
   final PokemonRemoteDataSource remoteDataSource;
-  final Box<PokemonModel> favoriteBox;
+  final PokemonLocalDataSource localDataSource;
 
   PokemonRepositoryImpl({
     required this.remoteDataSource,
-    required this.favoriteBox,
+    required this.localDataSource,
   });
 
   @override
   Future<List<PokemonEntity>> getPokemonList(int offset, int limit) async {
-    final data = await remoteDataSource.getPokemonList(offset, limit);
-    final models = (data['results'] as List)
-        .map((item) => PokemonModel.fromJson(item))
-        .toList();
-    return models;
+    return await remoteDataSource.getPokemonList(offset, limit);
   }
 
   @override
   Future<PokemonEntity> getPokemonDetails(String name) async {
-    final data = await remoteDataSource.getPokemonDetails(name);
-    final model = PokemonModel.fromJson(data['results']);
-    return model;
+    return await remoteDataSource.getPokemonDetails(name);
+  }
+  
+  @override
+  Future<AbilityElementEntity> getAbilityDetails(String id) async {
+    return await remoteDataSource.getAbilityDetails(id);
   }
 
   @override
-  Future<void> addFavorite(PokemonEntity pokemon) async {
-    await favoriteBox.put(pokemon.id, pokemon as PokemonModel);
+  Future<TypeEntity> getTypeDetails(String id) async {
+    return await remoteDataSource.getTypeDetails(id);
   }
-
+  
+  @override
+  Future<List<PokemonEntity>> getFavorites() async {
+    return await localDataSource.getFavorites();
+  }
+  
   @override
   Future<void> removeFavorite(String id) async {
-    await favoriteBox.delete(id);
+    return await localDataSource.removeFavorite(id);
   }
-
+  
   @override
-  Future<List<PokemonEntity>> getFavoritePokemons() async {
-    return favoriteBox.values.toList();
+  Future<void> saveFavorite(PokemonEntity pokemon) async {
+    return await localDataSource.saveFavorite(pokemon);
+  }
+  
+  @override
+  Future<void> updateNickname(String id, String nickname) async {
+    return await localDataSource.updateNickname(id, nickname);
   }
 }

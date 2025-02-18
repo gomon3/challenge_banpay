@@ -26,7 +26,7 @@ class PokemonModel extends PokemonEntity {
   final int weight;
 
   @HiveField(6)
-  final String? nickname;
+  String? nickname;
 
   @HiveField(7)
   final List<AbilityElementModel> abilities;

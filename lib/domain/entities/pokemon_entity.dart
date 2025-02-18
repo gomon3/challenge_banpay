@@ -6,7 +6,7 @@ class PokemonEntity {
   final String imageSrc;
   final int height;
   final int weight;
-  final String? nickname;
+  String? nickname;
   final List<AbilityElementEntity> abilities;
   final List<TypeEntity> types;
 
