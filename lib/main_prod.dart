@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:challenge_banpay/core/utils/global.dart';
 import 'package:challenge_banpay/core/constants/ui_color.dart';
+import 'package:challenge_banpay/core/utils/config_service.dart';
 
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -17,6 +18,9 @@ void main() async {
   Hive.init(appDocumentDirectory.path);
   Hive.registerAdapter(PokemonModelAdapter());
   await Hive.openBox<PokemonModel>('pokemonBox');
+
+  await ConfigService().loadConfig();
+
   
   runApp(const ProviderScope(child: MyApp()));
 }

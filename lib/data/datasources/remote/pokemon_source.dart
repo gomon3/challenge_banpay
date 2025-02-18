@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:challenge_banpay/core/utils/config_service.dart';
 import 'package:challenge_banpay/data/models/pokemon_model.dart';
 
 abstract class PokemonRemoteDataSource {
@@ -12,16 +11,19 @@ abstract class PokemonRemoteDataSource {
 class PokemonRemoteDataSourceImpl implements PokemonRemoteDataSource {
   final Dio _dio;
 
-  PokemonRemoteDataSourceImpl(ConfigService configService)
-      : _dio = Dio(BaseOptions(
-          baseUrl: configService.getBaseUrl("pokemonService"),
-          connectTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 10),
-        )) {
-    if (configService.isSslEnabled()) {
-      _setupSSLPinning();
-    }
-  }
+  // PokemonRemoteDataSourceImpl(ConfigService configService)
+  //     : _dio = Dio(BaseOptions(
+  //         baseUrl: configService.getBaseUrl("pokemonService"),
+  //         connectTimeout: const Duration(seconds: 10),
+  //         receiveTimeout: const Duration(seconds: 10),
+  //       )) {
+  //   if (configService.isSslEnabled()) {
+  //     _setupSSLPinning();
+  //   }
+  // }
+
+  PokemonRemoteDataSourceImpl(this._dio);
+
 
   void _setupSSLPinning() async {
     print('Setting up SSL pinning');

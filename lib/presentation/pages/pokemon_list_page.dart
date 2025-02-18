@@ -1,90 +1,38 @@
-import 'package:challenge_banpay/presentation/pages/pokemon_detail_page.dart';
+import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:challenge_banpay/presentation/providers/pokemon_providers.dart';
 
-import 'dart:convert';
-
-
-
-class PokemonListPage extends StatefulWidget {
+class PokemonListPage extends ConsumerWidget {
   @override
-  _PokemonListPageState createState() => _PokemonListPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final repository = ref.read(pokemonRepositoryProvider);
 
-class _PokemonListPageState extends State<PokemonListPage> {
-  List<dynamic> pokemonList = [];
-  List<dynamic> filteredList = [];
-  int offset = 0;
-  bool isLoading = false;
-  TextEditingController searchController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    fetchPokemon();
-  }
-
-  Future<void> fetchPokemon() async {
-    if (isLoading) return;
-    setState(() => isLoading = true);
-    final response = await http.get(Uri.parse('https://pokeapi.co/api/v2/pokemon?offset=$offset&limit=20'));
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        pokemonList.addAll(data['results']);
-        filteredList = List.from(pokemonList);
-        offset += 20;
-        isLoading = false;
-      });
-    }
-  }
-
-  void searchPokemon(String query) {
-    setState(() {
-      filteredList = pokemonList.where((pokemon) => pokemon['name'].contains(query.toLowerCase())).toList();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Pokémon List')),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: searchController,
-              decoration: InputDecoration(labelText: 'Search Pokémon'),
-              onChanged: searchPokemon,
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredList.length + 1,
+      body: FutureBuilder<List<PokemonEntity>>(
+        future: repository.getPokemonList(0, 20),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            final pokemons = snapshot.data!;
+            return ListView.builder(
+              itemCount: pokemons.length,
               itemBuilder: (context, index) {
-                if (index == filteredList.length) {
-                  return isLoading ? Center(child: CircularProgressIndicator()) : SizedBox();
-                }
+                final pokemon = pokemons[index];
                 return ListTile(
-                  title: Text(filteredList[index]['name'].toUpperCase()),
+                  title: Text(pokemon.name),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PokemonDetailPage(name: filteredList[index]['name']),
-                      ),
-                    );
+                    // Navegar a la vista de detalle
                   },
                 );
               },
-            ),
-          ),
-          ElevatedButton(
-            onPressed: fetchPokemon,
-            child: Text('Load More'),
-          ),
-        ],
+            );
+          }
+        },
       ),
     );
   }

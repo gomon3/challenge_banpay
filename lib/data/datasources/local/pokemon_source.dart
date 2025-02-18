@@ -11,8 +11,7 @@ abstract class PokemonLocalDataSource {
 class PokemonLocalDataSourceImpl implements PokemonLocalDataSource {
   final Box<PokemonModel> _box;
 
-  PokemonLocalDataSourceImpl()
-    : _box = Hive.box<PokemonModel>('favorites');
+  PokemonLocalDataSourceImpl(this._box);
 
   @override
   Future<void> saveFavorite(PokemonModel pokemon) async {
