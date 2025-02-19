@@ -1,12 +1,13 @@
-import 'package:challenge_banpay/presentation/pages/pokemon_detail_page.dart';
-import 'package:challenge_banpay/presentation/widgets/poke_item.dart';
-import 'package:challenge_banpay/presentation/widgets/poke_types.dart';
+import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:challenge_banpay/presentation/widgets/poke_item.dart';
+import 'package:challenge_banpay/presentation/widgets/poke_types.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:challenge_banpay/core/constants/ui_color.dart';
 import 'package:challenge_banpay/presentation/providers/pokemon_providers.dart';
 import 'package:challenge_banpay/presentation/providers/data_sources_providers.dart';
+import 'package:challenge_banpay/presentation/pages/pokemon_detail_page.dart';
 
 class PokemonListPage extends ConsumerWidget {
   @override
@@ -41,7 +42,7 @@ class PokemonListPage extends ConsumerWidget {
       ),
       body: repositoryAsync.when(
         data: (repository) {
-          final getPokemonListUseCase = ref.read(getPokemonListUseCaseProvider);
+          final pokemonListAsync = ref.watch(pokemonListNotifierProvider);
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -60,17 +61,19 @@ class PokemonListPage extends ConsumerWidget {
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: kDefaultPaddin),
-                  child: FutureBuilder<Map<String, dynamic>>(
-                    future: getPokemonListUseCase.call(0, 5),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else {
-                        final pokemonData = snapshot.data!;
-                        final pokemonList = (pokemonData['results'] as List);
-                        return GridView.builder(
+                  child: pokemonListAsync.when(
+                    data: (pokemonList) {
+                      return NotificationListener<ScrollNotification>(
+                        onNotification: (ScrollNotification scrollInfo) {
+                          if (scrollInfo.metrics.pixels ==
+                              scrollInfo.metrics.maxScrollExtent) {
+                            ref
+                                .read(pokemonListNotifierProvider.notifier)
+                                .loadMore();
+                          }
+                          return true;
+                        },
+                        child: GridView.builder(
                           itemCount: pokemonList.length,
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
@@ -81,18 +84,24 @@ class PokemonListPage extends ConsumerWidget {
                           ),
                           itemBuilder: (context, index) => PokeCard(
                             item: pokemonList[index],
-                            press: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PokemonDetailPage(
-                                  pokemon: pokemonList[index],
+                            press: () async {
+                              final pokemon = PokemonEntity(id: 1, name: 'name', smallImageSrc: 'smallImageSrc', imageSrc: 'imageSrc', height: 1, weight: 1, abilities: [], types: []);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PokemonDetailPage(pokemon: pokemon),
                                 ),
-                              ),
-                            ),
+                              );
+                            },
                           ),
-                        );
-                      }
+                        ),
+                      );
                     },
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (error, stack) => Center(
+                        child:
+                            Text('Error aver: $error + ${stack.toString()}')),
                   ),
                 ),
               ),

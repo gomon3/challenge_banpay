@@ -35,8 +35,8 @@ class PokeCard extends StatelessWidget {
               style: const TextStyle(color: kTextLightColor),
             ),
           ),
-          const Text(
-            "222.00",
+          Text(
+            item['url'],
             style: TextStyle(fontWeight: FontWeight.bold),
           )
         ],
