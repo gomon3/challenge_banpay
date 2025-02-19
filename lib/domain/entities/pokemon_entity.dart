@@ -1,6 +1,6 @@
 
 class PokemonEntity {
-  final String id;
+  final int id;
   final String name;
   final String smallImageSrc;
   final String imageSrc;

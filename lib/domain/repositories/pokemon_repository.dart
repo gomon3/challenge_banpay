@@ -1,7 +1,7 @@
 import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
 
 abstract class PokemonRepository {
-  Future<List<PokemonEntity>> getPokemonList(int offset, int limit);
+  Future<Map<String, dynamic>> getPokemonList(int offset, int limit);
   Future<PokemonEntity> getPokemonDetails(String name);
   Future<AbilityElementEntity> getAbilityDetails(String id);
   Future<TypeEntity> getTypeDetails(String id);

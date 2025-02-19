@@ -7,7 +7,7 @@ part 'pokemon_model.g.dart';
 @HiveType(typeId: 0)
 class PokemonModel extends PokemonEntity {
   @HiveField(0)
-  final String id;
+  final int id;
 
   @override
   @HiveField(1)
@@ -64,8 +64,9 @@ class PokemonModel extends PokemonEntity {
   factory PokemonModel.fromJson(Map<String, dynamic> json) => PokemonModel(
         id: json["id"],
         name: json["name"],
-        smallImageSrc: json["smallImageSrc"],
-        imageSrc: json["imageSrc"],
+        smallImageSrc: json["sprites"]["other"]["showdown"]["front_default"] ??
+          json["sprites"]["front_default"],
+        imageSrc: json["sprites"]["other"]["home"]["front_default"],
         height: json["height"],
         weight: json["weight"],
         nickname: json["nickname"],

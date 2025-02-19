@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:challenge_banpay/data/models/pokemon_model.dart';
 
 abstract class PokemonRemoteDataSource {
-  Future<List<PokemonModel>> getPokemonList(int offset, int limit);
+  Future<Map<String, dynamic>> getPokemonList(int offset, int limit);
   Future<PokemonModel> getPokemonDetails(String name);
   Future<AbilityElementModel> getAbilityDetails(String id);
   Future<TypeModel> getTypeDetails(String id);
@@ -10,54 +10,38 @@ abstract class PokemonRemoteDataSource {
 
 class PokemonRemoteDataSourceImpl implements PokemonRemoteDataSource {
   final Dio _dio;
-
-  // PokemonRemoteDataSourceImpl(ConfigService configService)
-  //     : _dio = Dio(BaseOptions(
-  //         baseUrl: configService.getBaseUrl("pokemonService"),
-  //         connectTimeout: const Duration(seconds: 10),
-  //         receiveTimeout: const Duration(seconds: 10),
-  //       )) {
-  //   if (configService.isSslEnabled()) {
-  //     _setupSSLPinning();
-  //   }
-  // }
+  final String pokemon = '/pokemon';
+  final String ability = '/ability';
+  final String type = '/type';
 
   PokemonRemoteDataSourceImpl(this._dio);
 
-
-  void _setupSSLPinning() async {
-    print('Setting up SSL pinning');
-  }
-
   @override
-  Future<List<PokemonModel>> getPokemonList(int offset, int limit) async {
-    final response = await _dio.get('pokemon', queryParameters: {
+  Future<Map<String, dynamic>> getPokemonList(int offset, int limit) async {
+    final response = await _dio.get(pokemon, queryParameters: {
       'offset': offset,
       'limit': limit,
     });
-    final models = (response.data['results'] as List)
-        .map((item) => PokemonModel.fromJson(item))
-        .toList();
-    return models;
+    return response.data;
   }
 
   @override
-  Future<PokemonModel> getPokemonDetails(String name) async {
-    final response = await _dio.get('pokemon/$name');
-    final model = PokemonModel.fromJson(response.data['results']);
+  Future<PokemonModel> getPokemonDetails(String id) async {
+    final response = await _dio.get('$pokemon/$id');
+    final model = PokemonModel.fromJson(response.data);
     return model;
   }
 
   @override
   Future<AbilityElementModel> getAbilityDetails(String id) async {
-    final response = await _dio.get('pokemon/$id');
+    final response = await _dio.get('$ability/$id');
     final model = AbilityElementModel.fromJson(response.data['results']);
     return model;
   }
-  
+
   @override
   Future<TypeModel> getTypeDetails(String id) async {
-    final response = await _dio.get('pokemon/$id');
+    final response = await _dio.get('$type/$id');
     final model = TypeModel.fromJson(response.data['results']);
     return model;
   }

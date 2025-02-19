@@ -17,7 +17,7 @@ class PokemonModelAdapter extends TypeAdapter<PokemonModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return PokemonModel(
-      id: fields[0] as String,
+      id: fields[0] as int,
       name: fields[1] as String,
       smallImageSrc: fields[2] as String,
       imageSrc: fields[3] as String,

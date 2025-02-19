@@ -1,88 +1,11 @@
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-
-// import 'dart:convert';
-
-// import 'package:shared_preferences/shared_preferences.dart';
-
-// class PokemonDetailPage extends StatefulWidget {
-//   final String name;
-//   PokemonDetailPage({required this.name});
-//   @override
-//   _PokemonDetailPageState createState() => _PokemonDetailPageState();
-// }
-
-// class _PokemonDetailPageState extends State<PokemonDetailPage> {
-//   Map<String, dynamic>? pokemonData;
-//   bool isFavorite = false;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     fetchPokemonDetails();
-//     checkFavoriteStatus();
-//   }
-
-//   Future<void> fetchPokemonDetails() async {
-//     final response = await http.get(Uri.parse('https://pokeapi.co/api/v2/pokemon/${widget.name}'));
-//     if (response.statusCode == 200) {
-//       setState(() {
-//         pokemonData = json.decode(response.body);
-//       });
-//     }
-//   }
-
-//   Future<void> checkFavoriteStatus() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     setState(() {
-//       isFavorite = prefs.getBool(widget.name) ?? false;
-//     });
-//   }
-
-//   Future<void> toggleFavorite() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     setState(() {
-//       isFavorite = !isFavorite;
-//       prefs.setBool(widget.name, isFavorite);
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: Text(widget.name.toUpperCase())),
-//       body: pokemonData == null
-//           ? Center(child: CircularProgressIndicator())
-//           : Column(
-//               children: [
-//                 Image.network(pokemonData!['sprites']['front_default']),
-//                 Text('Height: ${pokemonData!['height']}'),
-//                 Text('Weight: ${pokemonData!['weight']}'),
-//                 Text('Base Experience: ${pokemonData!['base_experience']}'),
-//                 Text('Abilities:'),
-//                 Column(
-//                   children: (pokemonData!['abilities'] as List)
-//                       .map((e) => Text(e['ability']['name']))
-//                       .toList(),
-//                 ),
-//                 IconButton(
-//                   icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-//                   onPressed: toggleFavorite,
-//                 ),
-//               ],
-//             ),
-//     );
-//   }
-// }
-
 import 'package:challenge_banpay/core/constants/ui_color.dart';
-import 'package:challenge_banpay/data/models/product.dart';
+import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class PokemonDetailPage extends StatelessWidget {
-  const PokemonDetailPage({super.key, required this.product});
-  final Product product;
+  const PokemonDetailPage({super.key, required this.pokemon});
+  final PokemonEntity pokemon;
 
 
    @override
@@ -90,9 +13,9 @@ class PokemonDetailPage extends StatelessWidget {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
       // each product have a color
-      backgroundColor: product.color,
+      backgroundColor: const Color(0xFF3D82AE),
       appBar: AppBar(
-        backgroundColor: product.color,
+        backgroundColor: const Color(0xFF3D82AE),
         elevation: 0,
         leading: IconButton(
           icon: SvgPicture.asset(
@@ -137,17 +60,17 @@ class PokemonDetailPage extends StatelessWidget {
                     ),
                     child: Column(
                       children: <Widget>[
-                        ColorAndSize(product: product),
+                        ColorAndSize(pokemon: pokemon),
                         const SizedBox(height: kDefaultPaddin / 2),
-                        Description(product: product),
+                        Description(pokemon: pokemon),
                         const SizedBox(height: kDefaultPaddin / 2),
                         const CounterWithFavBtn(),
                         const SizedBox(height: kDefaultPaddin / 2),
-                        AddToCart(product: product)
+                        AddToCart(pokemon: pokemon)
                       ],
                     ),
                   ),
-                  ProductTitleWithImage(product: product)
+                  ProductTitleWithImage(pokemon: pokemon)
                 ],
               ),
             )
@@ -159,9 +82,9 @@ class PokemonDetailPage extends StatelessWidget {
 }
 
 class ColorAndSize extends StatelessWidget {
-  const ColorAndSize({super.key, required this.product});
+  const ColorAndSize({super.key, required this.pokemon});
 
-  final Product product;
+  final PokemonEntity pokemon;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -194,7 +117,7 @@ class ColorAndSize extends StatelessWidget {
               children: [
                 const TextSpan(text: "Size\n"),
                 TextSpan(
-                  text: "${product.size} cm",
+                  text: "13 cm",
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge!
@@ -241,16 +164,16 @@ class ColorDot extends StatelessWidget {
 }
 
 class Description extends StatelessWidget {
-  const Description({super.key, required this.product});
+  const Description({super.key, required this.pokemon});
 
-  final Product product;
+  final PokemonEntity pokemon;
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: kDefaultPaddin),
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: kDefaultPaddin),
       child: Text(
-        product.description,
-        style: const TextStyle(height: 1.5),
+        'Best description',
+        style: TextStyle(height: 1.5),
       ),
     );
   }
@@ -281,9 +204,9 @@ class CounterWithFavBtn extends StatelessWidget {
 }
 
 class AddToCart extends StatelessWidget {
-  const AddToCart({super.key, required this.product});
+  const AddToCart({super.key, required this.pokemon});
 
-  final Product product;
+  final PokemonEntity pokemon;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -297,13 +220,13 @@ class AddToCart extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                color: product.color,
+                color: const Color(0xFF3D82AE),
               ),
             ),
             child: IconButton(
               icon: SvgPicture.asset(
                 "assets/icons/add_to_cart.svg",
-                colorFilter: ColorFilter.mode(product.color, BlendMode.srcIn),
+                colorFilter: const ColorFilter.mode( Color(0xFF3D82AE), BlendMode.srcIn),
               ),
               onPressed: () {},
             ),
@@ -315,7 +238,7 @@ class AddToCart extends StatelessWidget {
                 minimumSize: const Size(double.infinity, 48),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18)),
-                backgroundColor: product.color,
+                backgroundColor: const Color(0xFF3D82AE),
               ),
               child: Text(
                 "Buy  Now".toUpperCase(),
@@ -333,9 +256,9 @@ class AddToCart extends StatelessWidget {
 }
 
 class ProductTitleWithImage extends StatelessWidget {
-  const ProductTitleWithImage({super.key, required this.product});
+  const ProductTitleWithImage({super.key, required this.pokemon});
 
-  final Product product;
+  final PokemonEntity pokemon;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -348,7 +271,7 @@ class ProductTitleWithImage extends StatelessWidget {
             style: TextStyle(color: Colors.white),
           ),
           Text(
-            product.title,
+            pokemon.name,
             style: Theme.of(context)
                 .textTheme
                 .titleLarge!
@@ -362,7 +285,7 @@ class ProductTitleWithImage extends StatelessWidget {
                   children: [
                     const TextSpan(text: "Price\n"),
                     TextSpan(
-                      text: "\$${product.price}",
+                      text: "\$222",
                       style: Theme.of(context)
                           .textTheme
                           .headlineSmall!
@@ -375,9 +298,9 @@ class ProductTitleWithImage extends StatelessWidget {
               const SizedBox(width: kDefaultPaddin),
               Expanded(
                 child: Hero(
-                  tag: "${product.id}",
+                  tag: "${pokemon.id}",
                   child: Image.asset(
-                    product.image,
+                    pokemon.imageSrc,
                     fit: BoxFit.fill,
                   ),
                 ),

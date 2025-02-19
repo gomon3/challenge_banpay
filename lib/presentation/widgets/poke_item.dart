@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:challenge_banpay/core/constants/ui_color.dart';
-import 'package:challenge_banpay/data/models/product.dart';
 
-class ItemCard extends StatelessWidget {
-  const ItemCard({super.key, required this.product, required this.press});
+class PokeCard extends StatelessWidget {
+  const PokeCard({super.key, required this.item, required this.press});
 
-  final Product product;
+  final Map item;
   final VoidCallback press;
 
   @override
@@ -19,12 +18,12 @@ class ItemCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(kDefaultPaddin),
               decoration: BoxDecoration(
-                color: product.color,
+                color: const Color(0xFF3D82AE),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Hero(
-                tag: "${product.id}",
-                child: Image.asset(product.image),
+                tag: item['url'],
+                child: Image.asset('assets/images/bag_1.png'),
               ),
             ),
           ),
@@ -32,13 +31,13 @@ class ItemCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: kDefaultPaddin / 4),
             child: Text(
               // products is out demo list
-              product.title,
+              item['name'],
               style: const TextStyle(color: kTextLightColor),
             ),
           ),
-          Text(
-            "\$${product.price}",
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          const Text(
+            "222.00",
+            style: TextStyle(fontWeight: FontWeight.bold),
           )
         ],
       ),

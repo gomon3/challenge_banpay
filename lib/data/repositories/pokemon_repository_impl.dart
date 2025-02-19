@@ -13,7 +13,7 @@ class PokemonRepositoryImpl implements PokemonRepository {
     this._localDataSource);
 
   @override
-  Future<List<PokemonEntity>> getPokemonList(int offset, int limit) async {
+  Future<Map<String, dynamic>> getPokemonList(int offset, int limit) async {
     return await _remoteDataSource.getPokemonList(offset, limit);
   }
 
