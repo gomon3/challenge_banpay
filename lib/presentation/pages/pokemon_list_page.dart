@@ -1,3 +1,4 @@
+import 'package:challenge_banpay/core/constants/rules.dart';
 import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,6 +64,9 @@ class PokemonListPage extends ConsumerWidget {
                       const EdgeInsets.symmetric(horizontal: kDefaultPaddin),
                   child: pokemonListAsync.when(
                     data: (pokemonList) {
+                      final getPokemonDetailsUseCase =
+                          ref.read(getPokemonDetailsUseCaseProvider);
+
                       return NotificationListener<ScrollNotification>(
                         onNotification: (ScrollNotification scrollInfo) {
                           if (scrollInfo.metrics.pixels ==
@@ -74,27 +78,44 @@ class PokemonListPage extends ConsumerWidget {
                           return true;
                         },
                         child: GridView.builder(
-                          itemCount: pokemonList.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: kDefaultPaddin,
-                            crossAxisSpacing: kDefaultPaddin,
-                            childAspectRatio: 0.75,
-                          ),
-                          itemBuilder: (context, index) => PokeCard(
-                            item: pokemonList[index],
-                            press: () async {
-                              final pokemon = PokemonEntity(id: 1, name: 'name', smallImageSrc: 'smallImageSrc', imageSrc: 'imageSrc', height: 1, weight: 1, abilities: [], types: []);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PokemonDetailPage(pokemon: pokemon),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                            itemCount: pokemonList.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: kDefaultPaddin,
+                              crossAxisSpacing: kDefaultPaddin,
+                              childAspectRatio: 0.75,
+                            ),
+                            itemBuilder: (context, index) =>
+                                FutureBuilder<PokemonEntity>(
+                                    future: getPokemonDetailsUseCase.call(
+                                        extractPokemonId(
+                                            pokemonList[index]['url'])),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const Center(
+                                            child: CircularProgressIndicator());
+                                      } else if (snapshot.hasError) {
+                                        return Center(
+                                            child: Text(
+                                                'Error: ${snapshot.error}'));
+                                      } else {
+                                        final pokemon = snapshot.data!;
+                                        return PokeCard(
+                                          item: pokemon,
+                                          press: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PokemonDetailPage(
+                                                pokemon: pokemon,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    })),
                       );
                     },
                     loading: () =>

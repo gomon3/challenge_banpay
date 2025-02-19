@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:challenge_banpay/core/constants/ui_color.dart';
 import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,7 @@ class PokemonDetailPage extends StatelessWidget {
   const PokemonDetailPage({super.key, required this.pokemon});
   final PokemonEntity pokemon;
 
-
-   @override
+  @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
@@ -226,7 +226,8 @@ class AddToCart extends StatelessWidget {
             child: IconButton(
               icon: SvgPicture.asset(
                 "assets/icons/add_to_cart.svg",
-                colorFilter: const ColorFilter.mode( Color(0xFF3D82AE), BlendMode.srcIn),
+                colorFilter:
+                    const ColorFilter.mode(Color(0xFF3D82AE), BlendMode.srcIn),
               ),
               onPressed: () {},
             ),
@@ -299,9 +300,13 @@ class ProductTitleWithImage extends StatelessWidget {
               Expanded(
                 child: Hero(
                   tag: "${pokemon.id}",
-                  child: Image.asset(
-                    pokemon.imageSrc,
-                    fit: BoxFit.fill,
+                  child: CachedNetworkImage(
+                    imageUrl: pokemon.imageSrc,
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                    fit: BoxFit.fill
                   ),
                 ),
               )

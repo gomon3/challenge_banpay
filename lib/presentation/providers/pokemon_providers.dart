@@ -6,6 +6,7 @@ import 'package:challenge_banpay/presentation/providers/data_sources_providers.d
 import 'package:challenge_banpay/data/repositories/pokemon_repository_impl.dart';
 import 'package:challenge_banpay/domain/repositories/pokemon_repository.dart';
 import 'package:challenge_banpay/domain/use_cases/get_pokemons.dart';
+import 'package:challenge_banpay/domain/use_cases/get_pokemon_details.dart';
 
 
 final pokemonRepositoryProvider = Provider<PokemonRepository>((ref) {
@@ -18,6 +19,11 @@ final pokemonRepositoryProvider = Provider<PokemonRepository>((ref) {
 final getPokemonListUseCaseProvider = Provider((ref) {
   final repository = ref.read(pokemonRepositoryProvider);
   return GetPokemonListUseCase(repository);
+});
+
+final getPokemonDetailsUseCaseProvider = Provider((ref) {
+  final repository = ref.read(pokemonRepositoryProvider);
+  return GetPokemonDetailsUseCase(repository);
 });
 
 final pokemonListNotifierProvider = StateNotifierProvider<PokemonListNotifier, AsyncValue<List<Map<String, dynamic>>>>((ref) {

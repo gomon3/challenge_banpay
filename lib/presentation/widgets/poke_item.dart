@@ -1,10 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
 import 'package:challenge_banpay/core/constants/ui_color.dart';
 
 class PokeCard extends StatelessWidget {
   const PokeCard({super.key, required this.item, required this.press});
 
-  final Map item;
+  final PokemonEntity item;
   final VoidCallback press;
 
   @override
@@ -18,12 +20,16 @@ class PokeCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(kDefaultPaddin),
               decoration: BoxDecoration(
-                color: const Color(0xFF3D82AE),
+                color: const Color(0xFF3D82AE), // Puedo cambiar el color
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Hero(
-                tag: item['url'],
-                child: Image.asset('assets/images/bag_1.png'),
+                tag: '${item.id}',
+                child: CachedNetworkImage(
+                  imageUrl: item.smallImageSrc,
+                  placeholder: (context, url) => const CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                ),
               ),
             ),
           ),
@@ -31,13 +37,13 @@ class PokeCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: kDefaultPaddin / 4),
             child: Text(
               // products is out demo list
-              item['name'],
-              style: const TextStyle(color: kTextLightColor),
+              item.name.toUpperCase(),
+              style: const TextStyle(color: kTextLightColor, ),
             ),
           ),
           Text(
-            item['url'],
-            style: TextStyle(fontWeight: FontWeight.bold),
+            item.nickname ?? '',
+            style: const TextStyle(fontWeight: FontWeight.bold),
           )
         ],
       ),
