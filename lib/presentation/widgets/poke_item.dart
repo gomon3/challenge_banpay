@@ -20,7 +20,7 @@ class PokeCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(kDefaultPaddin),
               decoration: BoxDecoration(
-                color: const Color(0xFF3D82AE), // Puedo cambiar el color
+                color: const Color(0xFFD3A984),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Hero(
