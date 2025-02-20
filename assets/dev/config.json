@@ -4,7 +4,7 @@
     {
       "endpoint": "pokemonService",
       "urls": [
-        "https://dev.pokeapi.co"
+        "https://pokeapi.co"
       ]
     }
   ],

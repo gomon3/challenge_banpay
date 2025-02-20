@@ -1,91 +1,143 @@
-import 'package:challenge_banpay/presentation/pages/pokemon_detail_page.dart';
+import 'package:challenge_banpay/core/constants/rules.dart';
+import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:challenge_banpay/presentation/widgets/poke_item.dart';
+import 'package:challenge_banpay/presentation/widgets/poke_types.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:challenge_banpay/core/constants/ui_color.dart';
+import 'package:challenge_banpay/presentation/providers/pokemon_providers.dart';
+import 'package:challenge_banpay/presentation/providers/data_sources_providers.dart';
+import 'package:challenge_banpay/presentation/pages/pokemon_detail_page.dart';
 
-import 'dart:convert';
-
-
-
-class PokemonListPage extends StatefulWidget {
-  @override
-  _PokemonListPageState createState() => _PokemonListPageState();
-}
-
-class _PokemonListPageState extends State<PokemonListPage> {
-  List<dynamic> pokemonList = [];
-  List<dynamic> filteredList = [];
-  int offset = 0;
-  bool isLoading = false;
-  TextEditingController searchController = TextEditingController();
+class PokemonListPage extends ConsumerWidget {
+  const PokemonListPage({super.key});
 
   @override
-  void initState() {
-    super.initState();
-    fetchPokemon();
-  }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final repositoryAsync = ref.watch(dioProvider);
 
-  Future<void> fetchPokemon() async {
-    if (isLoading) return;
-    setState(() => isLoading = true);
-    final response = await http.get(Uri.parse('https://pokeapi.co/api/v2/pokemon?offset=$offset&limit=20'));
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        pokemonList.addAll(data['results']);
-        filteredList = List.from(pokemonList);
-        offset += 20;
-        isLoading = false;
-      });
-    }
-  }
-
-  void searchPokemon(String query) {
-    setState(() {
-      filteredList = pokemonList.where((pokemon) => pokemon['name'].contains(query.toLowerCase())).toList();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Pokémon List')),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: searchController,
-              decoration: InputDecoration(labelText: 'Search Pokémon'),
-              onChanged: searchPokemon,
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredList.length + 1,
-              itemBuilder: (context, index) {
-                if (index == filteredList.length) {
-                  return isLoading ? Center(child: CircularProgressIndicator()) : SizedBox();
-                }
-                return ListTile(
-                  title: Text(filteredList[index]['name'].toUpperCase()),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PokemonDetailPage(name: filteredList[index]['name']),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-          ElevatedButton(
-            onPressed: fetchPokemon,
-            child: Text('Load More'),
-          ),
-        ],
+      appBar: _getAppBart(),
+      body: repositoryAsync.when(
+        data: (repository) {
+          final pokemonListAsync = ref.watch(pokemonListNotifierProvider);
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: kDefaultPaddin),
+                child: Text(
+                  "Pokédex",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const Categories(),
+              Expanded(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: kDefaultPaddin),
+                  child: pokemonListAsync.when(
+                    data: (pokemonList) {
+                      final getPokemonDetailsUseCase =
+                          ref.read(getPokemonDetailsUseCaseProvider);
+
+                      return NotificationListener<ScrollNotification>(
+                        onNotification: (ScrollNotification scrollInfo) {
+                          if (scrollInfo.metrics.pixels ==
+                              scrollInfo.metrics.maxScrollExtent) {
+                            ref
+                                .read(pokemonListNotifierProvider.notifier)
+                                .loadMore();
+                          }
+                          return true;
+                        },
+                        child: GridView.builder(
+                            itemCount: pokemonList.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: kDefaultPaddin,
+                              crossAxisSpacing: kDefaultPaddin,
+                              childAspectRatio: 0.75,
+                            ),
+                            itemBuilder: (context, index) =>
+                                FutureBuilder<PokemonEntity>(
+                                    future: getPokemonDetailsUseCase.call(
+                                        extractRequestId(
+                                            pokemonList[index].url!)),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const Center(
+                                            child: CircularProgressIndicator());
+                                      } else if (snapshot.hasError) {
+                                        return Center(
+                                            child: Text(
+                                                'Error: ${snapshot.error}'));
+                                      } else {
+                                        final pokemon = snapshot.data!;
+                                        return PokeCard(
+                                          item: pokemon,
+                                          press: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PokemonDetailPage(
+                                                pokemon: pokemon,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    })),
+                      );
+                    },
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (error, stack) => Center(
+                        child:
+                            Text('Error aver: $error + ${stack.toString()}')),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
       ),
+    );
+  }
+
+  AppBar _getAppBart() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
+        icon: SvgPicture.asset("assets/icons/back.svg"),
+        onPressed: () {},
+      ),
+      actions: <Widget>[
+        IconButton(
+          icon: SvgPicture.asset(
+            "assets/icons/search.svg",
+            colorFilter: const ColorFilter.mode(kTextColor, BlendMode.srcIn),
+          ),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: SvgPicture.asset(
+            "assets/icons/cart.svg",
+            colorFilter: const ColorFilter.mode(kTextColor, BlendMode.srcIn),
+          ),
+          onPressed: () {},
+        ),
+        const SizedBox(width: kDefaultPaddin / 2)
+      ],
     );
   }
 }
