@@ -28,6 +28,11 @@ class PokemonRepositoryImpl implements PokemonRepository {
   }
 
   @override
+  Future<Map<String, dynamic>> getTypesList(int offset, int limit) async {
+    return await _remoteDataSource.getTypesList(offset, limit);
+  }
+
+  @override
   Future<TypeEntity> getTypeDetails(String id) async {
     return await _remoteDataSource.getTypeDetails(id);
   }

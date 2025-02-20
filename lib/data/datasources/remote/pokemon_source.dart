@@ -4,6 +4,7 @@ import 'package:challenge_banpay/data/models/pokemon_model.dart';
 abstract class PokemonRemoteDataSource {
   Future<Map<String, dynamic>> getPokemonList(int offset, int limit);
   Future<PokemonModel> getPokemonDetails(String name);
+  Future<Map<String, dynamic>> getTypesList(int offset, int limit);
   Future<AbilityElementModel> getAbilityDetails(String id);
   Future<TypeModel> getTypeDetails(String id);
 }
@@ -30,6 +31,15 @@ class PokemonRemoteDataSourceImpl implements PokemonRemoteDataSource {
     final response = await _dio.get('$pokemon/$id');
     final model = PokemonModel.fromJson(response.data);
     return model;
+  }
+
+  @override
+  Future<Map<String, dynamic>> getTypesList(int offset, int limit) async {
+    final response = await _dio.get(type, queryParameters: {
+      'offset': offset,
+      'limit': limit,
+    });
+    return response.data;
   }
 
   @override

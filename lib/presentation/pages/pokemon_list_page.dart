@@ -11,6 +11,8 @@ import 'package:challenge_banpay/presentation/providers/data_sources_providers.d
 import 'package:challenge_banpay/presentation/pages/pokemon_detail_page.dart';
 
 class PokemonListPage extends ConsumerWidget {
+  const PokemonListPage({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final repositoryAsync = ref.watch(dioProvider);
@@ -89,7 +91,7 @@ class PokemonListPage extends ConsumerWidget {
                             itemBuilder: (context, index) =>
                                 FutureBuilder<PokemonEntity>(
                                     future: getPokemonDetailsUseCase.call(
-                                        extractPokemonId(
+                                        extractRequestId(
                                             pokemonList[index]['url'])),
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==

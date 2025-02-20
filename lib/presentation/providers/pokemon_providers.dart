@@ -1,4 +1,5 @@
 import 'package:challenge_banpay/domain/notifiers/pokemon_list_notifier.dart';
+import 'package:challenge_banpay/domain/use_cases/get_pokemon_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:challenge_banpay/presentation/providers/data_sources_providers.dart';
@@ -24,6 +25,11 @@ final getPokemonListUseCaseProvider = Provider((ref) {
 final getPokemonDetailsUseCaseProvider = Provider((ref) {
   final repository = ref.read(pokemonRepositoryProvider);
   return GetPokemonDetailsUseCase(repository);
+});
+
+final getPokemonTypesListUseCaseProvider = Provider((ref) {
+  final repository = ref.read(pokemonRepositoryProvider);
+  return GetPokemonTypesListUseCase(repository);
 });
 
 final pokemonListNotifierProvider = StateNotifierProvider<PokemonListNotifier, AsyncValue<List<Map<String, dynamic>>>>((ref) {

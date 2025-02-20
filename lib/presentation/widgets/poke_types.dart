@@ -1,17 +1,39 @@
-import 'package:challenge_banpay/core/constants/ui_color.dart';
+import 'package:challenge_banpay/core/constants/rules.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:challenge_banpay/core/constants/ui_color.dart';
+import 'package:challenge_banpay/presentation/providers/pokemon_providers.dart';
 
-class Categories extends StatefulWidget {
+
+class Categories extends ConsumerStatefulWidget {
   const Categories({super.key});
-
+  
   @override
-  State<Categories> createState() => _CategoriesState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _CategoriesState();
 }
 
-class _CategoriesState extends State<Categories> {
+class _CategoriesState extends ConsumerState<Categories> {
+  final int offset = 0;
+  final int limit = 30; // No existen más de 30 tipos de pokemones
   List<String> categories = ["Hand bag", "Jewellery", "Footwear", "Dresses"];
   // By default our first item will be selected
   int selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _getTypesList();
+  }
+
+  Future<void> _getTypesList() async {
+    final getTypesListUseCase = ref.read(getPokemonTypesListUseCaseProvider);
+    final typesInfo = await getTypesListUseCase.call(offset, limit);
+    final typesList = typesInfo['results'] as List<dynamic>;
+    for (final type in typesList) {
+      print(extractRequestId(type['url']));
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Padding(
