@@ -2,6 +2,7 @@ import 'package:challenge_banpay/data/datasources/local/pokemon_source.dart';
 import 'package:challenge_banpay/data/datasources/remote/pokemon_source.dart';
 import 'package:challenge_banpay/data/models/pokemon_model.dart';
 import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
+import 'package:challenge_banpay/domain/entities/pokemon_pagination_entity.dart';
 import 'package:challenge_banpay/domain/repositories/pokemon_repository.dart';
 
 class PokemonRepositoryImpl implements PokemonRepository {
@@ -13,7 +14,7 @@ class PokemonRepositoryImpl implements PokemonRepository {
     this._localDataSource);
 
   @override
-  Future<Map<String, dynamic>> getPokemonList(int offset, int limit) async {
+  Future<PaginationEntity> getPokemonList(int offset, int limit) async {
     return await _remoteDataSource.getPokemonList(offset, limit);
   }
 
@@ -28,7 +29,7 @@ class PokemonRepositoryImpl implements PokemonRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> getTypesList(int offset, int limit) async {
+  Future<PaginationEntity> getTypesList(int offset, int limit) async {
     return await _remoteDataSource.getTypesList(offset, limit);
   }
 

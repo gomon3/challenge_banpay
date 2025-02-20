@@ -1,3 +1,4 @@
+import 'package:challenge_banpay/domain/entities/pokemon_pagination_entity.dart';
 import 'package:challenge_banpay/domain/repositories/pokemon_repository.dart';
 
 class GetPokemonTypesListUseCase {
@@ -5,7 +6,7 @@ class GetPokemonTypesListUseCase {
 
   GetPokemonTypesListUseCase(this.repository);
 
-  Future<Map<String, dynamic>> call(int offset, int limit) async {
+  Future<PaginationEntity> call(int offset, int limit) async {
     return await repository.getTypesList(offset, limit);
   }
 }

@@ -1,9 +1,10 @@
 import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
+import 'package:challenge_banpay/domain/entities/pokemon_pagination_entity.dart';
 
 abstract class PokemonRepository {
-  Future<Map<String, dynamic>> getPokemonList(int offset, int limit);
+  Future<PaginationEntity> getPokemonList(int offset, int limit);
   Future<PokemonEntity> getPokemonDetails(String name);
-  Future<Map<String, dynamic>> getTypesList(int offset, int limit);
+  Future<PaginationEntity> getTypesList(int offset, int limit);
   Future<AbilityElementEntity> getAbilityDetails(String id);
   Future<TypeEntity> getTypeDetails(String id);
   Future<List<PokemonEntity>> getFavorites();

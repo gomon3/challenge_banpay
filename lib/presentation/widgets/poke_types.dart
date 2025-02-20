@@ -27,10 +27,9 @@ class _CategoriesState extends ConsumerState<Categories> {
 
   Future<void> _getTypesList() async {
     final getTypesListUseCase = ref.read(getPokemonTypesListUseCaseProvider);
-    final typesInfo = await getTypesListUseCase.call(offset, limit);
-    final typesList = typesInfo['results'] as List<dynamic>;
-    for (final type in typesList) {
-      print(extractRequestId(type['url']));
+    final typesList = await getTypesListUseCase.call(offset, limit);
+    for (final type in typesList.results!) {
+      print(extractRequestId(type.url!));
     }
   }
   

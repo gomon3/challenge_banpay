@@ -92,7 +92,7 @@ class PokemonListPage extends ConsumerWidget {
                                 FutureBuilder<PokemonEntity>(
                                     future: getPokemonDetailsUseCase.call(
                                         extractRequestId(
-                                            pokemonList[index]['url'])),
+                                            pokemonList[index].url!)),
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
