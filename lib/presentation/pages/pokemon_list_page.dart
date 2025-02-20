@@ -18,31 +18,7 @@ class PokemonListPage extends ConsumerWidget {
     final repositoryAsync = ref.watch(dioProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: SvgPicture.asset("assets/icons/back.svg"),
-          onPressed: () {},
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: SvgPicture.asset(
-              "assets/icons/search.svg",
-              colorFilter: const ColorFilter.mode(kTextColor, BlendMode.srcIn),
-            ),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: SvgPicture.asset(
-              "assets/icons/cart.svg",
-              colorFilter: const ColorFilter.mode(kTextColor, BlendMode.srcIn),
-            ),
-            onPressed: () {},
-          ),
-          const SizedBox(width: kDefaultPaddin / 2)
-        ],
-      ),
+      appBar: _getAppBart(),
       body: repositoryAsync.when(
         data: (repository) {
           final pokemonListAsync = ref.watch(pokemonListNotifierProvider);
@@ -134,6 +110,34 @@ class PokemonListPage extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
       ),
+    );
+  }
+
+  AppBar _getAppBart() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
+        icon: SvgPicture.asset("assets/icons/back.svg"),
+        onPressed: () {},
+      ),
+      actions: <Widget>[
+        IconButton(
+          icon: SvgPicture.asset(
+            "assets/icons/search.svg",
+            colorFilter: const ColorFilter.mode(kTextColor, BlendMode.srcIn),
+          ),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: SvgPicture.asset(
+            "assets/icons/cart.svg",
+            colorFilter: const ColorFilter.mode(kTextColor, BlendMode.srcIn),
+          ),
+          onPressed: () {},
+        ),
+        const SizedBox(width: kDefaultPaddin / 2)
+      ],
     );
   }
 }

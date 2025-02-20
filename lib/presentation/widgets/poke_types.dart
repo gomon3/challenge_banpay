@@ -16,8 +16,9 @@ class _CategoriesState extends ConsumerState<Categories> {
   final int offset = 0;
   final int limit = 30; // No existen más de 30 tipos de pokemones
   List<PokemonTypeEntity> categories = [];
-  // By default our first item will be selected
-  int selectedIndex = 0;
+  
+  // By default no category is selected
+  int selectedIndex = -1;
 
   @override
   void initState() {
@@ -58,7 +59,14 @@ class _CategoriesState extends ConsumerState<Categories> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          selectedIndex = index;
+          if (selectedIndex == index) {
+            selectedIndex = -1;
+            ref.read(pokemonListNotifierProvider.notifier).resetToPagination();
+          } else {
+            selectedIndex = index;
+            ref.read(pokemonListNotifierProvider.notifier)
+               .replaceWithNewList(categories[index].pokemon);
+          }
         });
       },
       child: Padding(

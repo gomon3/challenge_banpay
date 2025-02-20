@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:challenge_banpay/domain/entities/pokemon_pagination_entity.dart';
+import 'package:challenge_banpay/domain/entities/pokemon_type_entity.dart';
 import 'package:challenge_banpay/domain/use_cases/get_pokemons.dart';
 
-class PokemonListNotifier
-    extends StateNotifier<AsyncValue<List<ResultEntity>>> {
+class PokemonListNotifier extends StateNotifier<AsyncValue<List<ResultEntity>>> {
   final GetPokemonListUseCase getPokemonListUseCase;
+  
   int offset = 0;
   final int limit = 10;
   bool hasMore = true;
@@ -22,7 +23,7 @@ class PokemonListNotifier
 
     try {
       final newData = await getPokemonListUseCase.call(offset, limit);
-      final newPokemonList = newData.results ?? []; 
+      final newPokemonList = newData.results ?? [];
       final currentState = state;
 
       if (currentState is AsyncData<List<ResultEntity>>) {
@@ -38,5 +39,25 @@ class PokemonListNotifier
     } finally {
       isLoading = false;
     }
+  }
+
+  void replaceWithNewList(List<PokemonEntity> pokemonEntityList) {
+    final newList = <ResultEntity>[];
+    for (final pokemon in pokemonEntityList) {
+      newList.add(ResultEntity(
+        name: pokemon.pokemon.name,
+        url: pokemon.pokemon.url,
+      ));
+    }
+    state = AsyncValue.data(newList);
+    offset = 0;
+    hasMore = false;
+  }
+
+  void resetToPagination() {
+    state = const AsyncValue.loading();
+    offset = 0;
+    hasMore = true;
+    loadMore();
   }
 }
