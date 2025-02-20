@@ -1,13 +1,13 @@
-import 'package:challenge_banpay/core/constants/rules.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:challenge_banpay/core/constants/ui_color.dart';
 import 'package:challenge_banpay/presentation/providers/pokemon_providers.dart';
-
+import 'package:challenge_banpay/core/constants/rules.dart';
+import 'package:challenge_banpay/domain/entities/pokemon_type_entity.dart';
 
 class Categories extends ConsumerStatefulWidget {
   const Categories({super.key});
-  
+
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _CategoriesState();
 }
@@ -15,7 +15,7 @@ class Categories extends ConsumerStatefulWidget {
 class _CategoriesState extends ConsumerState<Categories> {
   final int offset = 0;
   final int limit = 30; // No existen más de 30 tipos de pokemones
-  List<String> categories = ["Hand bag", "Jewellery", "Footwear", "Dresses"];
+  List<PokemonTypeEntity> categories = [];
   // By default our first item will be selected
   int selectedIndex = 0;
 
@@ -27,12 +27,18 @@ class _CategoriesState extends ConsumerState<Categories> {
 
   Future<void> _getTypesList() async {
     final getTypesListUseCase = ref.read(getPokemonTypesListUseCaseProvider);
+    final getTypesDetailsUseCase = ref.read(getPokemonTypeeDetailsUseCaseProvider);
+
     final typesList = await getTypesListUseCase.call(offset, limit);
     for (final type in typesList.results!) {
-      print(extractRequestId(type.url!));
+      final typeId = extractRequestId(type.url!);
+      final typeDetails = await getTypesDetailsUseCase.call(typeId);
+      categories.add(typeDetails);
     }
+    
+    setState(() {});
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -61,7 +67,7 @@ class _CategoriesState extends ConsumerState<Categories> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              categories[index],
+              _getNameByLanguage(categories[index], 'es'),
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: selectedIndex == index ? kTextColor : kTextLightColor,
@@ -79,5 +85,20 @@ class _CategoriesState extends ConsumerState<Categories> {
         ),
       ),
     );
+  }
+
+  String _getNameByLanguage(PokemonTypeEntity type, String language) {
+    //WTF: _TypeError (type '() => NameEntity' is not a subtype of type '(() => NameModel)?' of 'orElse')
+    try {
+      final name = type.names.firstWhere(
+        (element) => element.language.name == language,
+      );
+      return name.name;
+    } catch (e) {
+      final name = type.names.firstWhere(
+        (element) => element.language.name == 'en',
+      );
+      return name.name;
+    }
   }
 }

@@ -1,13 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:challenge_banpay/data/models/pokemon_model.dart';
 import 'package:challenge_banpay/data/models/pokemon_pagination_model.dart';
+import 'package:challenge_banpay/data/models/pokemon_type_model.dart' as pokemon_type;
 
 abstract class PokemonRemoteDataSource {
   Future<PaginationModel> getPokemonList(int offset, int limit);
   Future<PokemonModel> getPokemonDetails(String name);
   Future<PaginationModel> getTypesList(int offset, int limit);
   Future<AbilityElementModel> getAbilityDetails(String id);
-  Future<TypeModel> getTypeDetails(String id);
+  Future<pokemon_type.PokemonTypeModel> getTypeDetails(String id);
 }
 
 class PokemonRemoteDataSourceImpl implements PokemonRemoteDataSource {
@@ -44,16 +45,16 @@ class PokemonRemoteDataSourceImpl implements PokemonRemoteDataSource {
   }
 
   @override
-  Future<AbilityElementModel> getAbilityDetails(String id) async {
-    final response = await _dio.get('$ability/$id');
-    final model = AbilityElementModel.fromJson(response.data['results']);
+  Future<pokemon_type.PokemonTypeModel> getTypeDetails(String id) async {
+    final response = await _dio.get('$type/$id');
+    final model = pokemon_type.PokemonTypeModel.fromJson(response.data);
     return model;
   }
 
   @override
-  Future<TypeModel> getTypeDetails(String id) async {
-    final response = await _dio.get('$type/$id');
-    final model = TypeModel.fromJson(response.data['results']);
+  Future<AbilityElementModel> getAbilityDetails(String id) async {
+    final response = await _dio.get('$ability/$id');
+    final model = AbilityElementModel.fromJson(response.data['results']);
     return model;
   }
 }

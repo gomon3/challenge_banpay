@@ -3,6 +3,7 @@ import 'package:challenge_banpay/data/datasources/remote/pokemon_source.dart';
 import 'package:challenge_banpay/data/models/pokemon_model.dart';
 import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
 import 'package:challenge_banpay/domain/entities/pokemon_pagination_entity.dart';
+import 'package:challenge_banpay/domain/entities/pokemon_type_entity.dart' as pokemon_type;
 import 'package:challenge_banpay/domain/repositories/pokemon_repository.dart';
 
 class PokemonRepositoryImpl implements PokemonRepository {
@@ -34,7 +35,7 @@ class PokemonRepositoryImpl implements PokemonRepository {
   }
 
   @override
-  Future<TypeEntity> getTypeDetails(String id) async {
+  Future<pokemon_type.PokemonTypeEntity> getTypeDetails(String id) async {
     return await _remoteDataSource.getTypeDetails(id);
   }
   
