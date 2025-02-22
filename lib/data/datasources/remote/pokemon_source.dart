@@ -2,13 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:challenge_banpay/data/models/pokemon_model.dart';
 import 'package:challenge_banpay/data/models/pokemon_pagination_model.dart';
 import 'package:challenge_banpay/data/models/pokemon_type_model.dart' as pokemon_type;
+import 'package:challenge_banpay/data/models/pokemon_ability_model.dart';
 
 abstract class PokemonRemoteDataSource {
   Future<PaginationModel> getPokemonList(int offset, int limit);
   Future<PokemonModel> getPokemonDetails(String name);
   Future<PaginationModel> getTypesList(int offset, int limit);
-  Future<AbilityElementModel> getAbilityDetails(String id);
   Future<pokemon_type.PokemonTypeModel> getTypeDetails(String id);
+  Future<AbilityModel> getAbilityDetails(String id);
 }
 
 class PokemonRemoteDataSourceImpl implements PokemonRemoteDataSource {
@@ -52,9 +53,9 @@ class PokemonRemoteDataSourceImpl implements PokemonRemoteDataSource {
   }
 
   @override
-  Future<AbilityElementModel> getAbilityDetails(String id) async {
+  Future<AbilityModel> getAbilityDetails(String id) async {
     final response = await _dio.get('$ability/$id');
-    final model = AbilityElementModel.fromJson(response.data['results']);
+    final model = AbilityModel.fromJson(response.data);
     return model;
   }
 }

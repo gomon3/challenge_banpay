@@ -5,6 +5,7 @@ import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
 import 'package:challenge_banpay/domain/entities/pokemon_pagination_entity.dart';
 import 'package:challenge_banpay/domain/entities/pokemon_type_entity.dart' as pokemon_type;
 import 'package:challenge_banpay/domain/repositories/pokemon_repository.dart';
+import 'package:challenge_banpay/data/models/pokemon_ability_model.dart';
 
 class PokemonRepositoryImpl implements PokemonRepository {
   final PokemonRemoteDataSource _remoteDataSource;
@@ -25,7 +26,7 @@ class PokemonRepositoryImpl implements PokemonRepository {
   }
   
   @override
-  Future<AbilityElementEntity> getAbilityDetails(String id) async {
+  Future<AbilityModel> getAbilityDetails(String id) async {
     return await _remoteDataSource.getAbilityDetails(id);
   }
 
