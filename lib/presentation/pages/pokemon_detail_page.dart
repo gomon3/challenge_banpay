@@ -1,9 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:challenge_banpay/core/constants/ui_color.dart';
-import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:challenge_banpay/core/constants/ui_color.dart';
+import 'package:challenge_banpay/domain/entities/pokemon_entity.dart';
+import 'package:challenge_banpay/presentation/widgets/poke_abilities.dart';
 
 class PokemonDetailPage extends StatelessWidget {
   const PokemonDetailPage({super.key, required this.pokemon});
@@ -71,99 +72,7 @@ class PokemonDetailPage extends StatelessWidget {
         ),
         onPressed: () => Navigator.pop(context),
       ),
-      actions: const <Widget>[
-        SizedBox(width: kDefaultPaddin / 2)
-      ],
-    );
-  }
-}
-
-class ColorAndSize extends StatelessWidget {
-  const ColorAndSize({super.key, required this.pokemon});
-
-  final PokemonEntity pokemon;
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text("Habilidades"),
-              Row(
-                children: <Widget>[
-                  ColorDot(
-                    color: Color(0xFF356C95),
-                    isSelected: true,
-                  ),
-                  ColorDot(
-                    color: Color(0xFFF8C078),
-                    isSelected: true,
-                  ),
-                  ColorDot(color: Color(0xFFA29B9B), isSelected: true),
-                ],
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: RichText(
-            text: TextSpan(
-              style: const TextStyle(color: kTextColor),
-              children: [
-                const TextSpan(text: "Peso y altura\n"),
-                TextSpan(
-                  text: "${pokemon.height / 10} kg",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(fontWeight: FontWeight.bold),
-                ),
-                const TextSpan(text: "  x  "),
-                TextSpan(
-                  text: "${pokemon.weight / 10} cm",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class ColorDot extends StatelessWidget {
-  const ColorDot({super.key, required this.color, required this.isSelected});
-
-  final Color color;
-  final bool isSelected;
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(
-        top: kDefaultPaddin / 4,
-        right: kDefaultPaddin / 2,
-      ),
-      padding: const EdgeInsets.all(2.5),
-      height: 24,
-      width: 24,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: isSelected ? color : Colors.transparent,
-        ),
-      ),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-        ),
-      ),
+      actions: const <Widget>[SizedBox(width: kDefaultPaddin / 2)],
     );
   }
 }
@@ -177,7 +86,7 @@ class Description extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: kDefaultPaddin),
       child: Text(
-        'Apodo: ${pokemon.nickname ?? 'Sin apodar'}', 
+        'Apodo: ${pokemon.nickname ?? 'Sin apodar'}',
         style: const TextStyle(height: 1.5),
       ),
     );
@@ -194,20 +103,20 @@ class CounterWithFavBtn extends ConsumerWidget {
       children: <Widget>[
         const CartCounter(),
         Container(
-        height: 32,
-        width: 32,
-        decoration: const BoxDecoration(
-          color: Color(0xFFFF6464),
-          shape: BoxShape.circle,
+          height: 32,
+          width: 32,
+          decoration: const BoxDecoration(
+            color: Color(0xFFFF6464),
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            padding: EdgeInsets.zero,
+            icon: SvgPicture.asset("assets/icons/heart.svg"),
+            onPressed: () {
+              //Add to favorite
+            },
+          ),
         ),
-        child: IconButton(
-          padding: EdgeInsets.zero,
-          icon: SvgPicture.asset("assets/icons/heart.svg"),
-          onPressed: () {
-            //Add to favorite
-          },
-        ),
-      ),
       ],
     );
   }
@@ -292,13 +201,12 @@ class ProductTitleWithImage extends StatelessWidget {
                 child: Hero(
                   tag: "${pokemon.id}",
                   child: CachedNetworkImage(
-                    imageUrl: pokemon.imageSrc,
-                    placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                    fit: BoxFit.fill
-                  ),
+                      imageUrl: pokemon.imageSrc,
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                      fit: BoxFit.fill),
                 ),
               )
             ],
